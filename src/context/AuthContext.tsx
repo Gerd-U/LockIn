@@ -1,6 +1,13 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import type { AuthContextType } from "../types/auth.types";
 import type { User } from "../types/user.types";
+import LoadingScreen from "../components/ui/LoadingScreen";
 
 const MOCK_USERS = [
   {
@@ -23,24 +30,32 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     const found = MOCK_USERS.find(
       (u) => u.email === email && u.password === password,
     );
-
     if (found) {
-      const { password: _, ...userWhitoutPassword } = found;
-      setUser(userWhitoutPassword);
+      const { password: _, ...userWithoutPassword } = found;
+      setUser(userWithoutPassword);
       return true;
     }
-
     return false;
   };
 
   const logout = () => {
     setUser(null);
   };
+
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <AuthContext.Provider
@@ -51,10 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAuth(): AuthContextType {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth debe usarse dentro de un AuthProvider");
   }
-  return context;
+  return context as AuthContextType;
 }
