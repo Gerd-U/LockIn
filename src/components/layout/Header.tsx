@@ -20,9 +20,9 @@ export default function Header() {
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
         <img
-          src="/src/assets/LockIn.png"
+          src="/LockIn.png"
           alt="LockIn logo"
-          className="w-8 h-8 object-contain"
+          className="h-8 w-auto object-contain"
         />
         <span className="text-white font-bold text-lg tracking-tight">
           LockIn
